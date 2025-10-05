@@ -9,10 +9,10 @@ import {
 
 const settingRoute = express.Router();
 
-settingRoute.get("/api/settings", getAllSettings);
-settingRoute.get("/api/settings/:key", getSettingByKey);
-settingRoute.post("/api/settings", createOrUpdateSetting);
-settingRoute.put("/api/settings/:key", updateSetting);
-settingRoute.delete("/api/settings/:key", deleteSetting);
+settingRoute.get("/", getAllSettings);
+settingRoute.get("/:key", getSettingByKey);
+settingRoute.post("/", createOrUpdateSetting);
+settingRoute.put("/:key", updateSetting);
+settingRoute.delete("/:key", deleteSetting);
 
 export default settingRoute;

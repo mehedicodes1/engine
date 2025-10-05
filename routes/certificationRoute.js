@@ -9,10 +9,10 @@ import {
 
 const certificationRoute = express.Router();
 
-certificationRoute.get("/api/certifications", getAllCertifications);
-certificationRoute.get("/api/certifications/:id", getCertificationById);
-certificationRoute.post("/api/certifications", createCertification);
-certificationRoute.put("/api/certifications/:id", updateCertification);
-certificationRoute.delete("/api/certifications/:id", deleteCertification);
+certificationRoute.get("/", getAllCertifications);
+certificationRoute.get("/:id", getCertificationById);
+certificationRoute.post("/", createCertification);
+certificationRoute.put("/:id", updateCertification);
+certificationRoute.delete("/:id", deleteCertification);
 
 export default certificationRoute;

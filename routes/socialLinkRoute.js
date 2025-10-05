@@ -9,10 +9,10 @@ import {
 
 const socialLinkRoute = express.Router();
 
-socialLinkRoute.get("/api/social-links", getAllSocialLinks);
-socialLinkRoute.get("/api/social-links/:id", getSocialLinkById);
-socialLinkRoute.post("/api/social-links", createSocialLink);
-socialLinkRoute.put("/api/social-links/:id", updateSocialLink);
-socialLinkRoute.delete("/api/social-links/:id", deleteSocialLink);
+socialLinkRoute.get("/", getAllSocialLinks);
+socialLinkRoute.get("/:id", getSocialLinkById);
+socialLinkRoute.post("/", createSocialLink);
+socialLinkRoute.put("/:id", updateSocialLink);
+socialLinkRoute.delete("/:id", deleteSocialLink);
 
 export default socialLinkRoute;

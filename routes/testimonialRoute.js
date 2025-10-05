@@ -9,10 +9,10 @@ import {
 
 const testimonialRoute = express.Router();
 
-testimonialRoute.get("/api/testimonials", getAllTestimonials);
-testimonialRoute.get("/api/testimonials/:id", getTestimonialById);
-testimonialRoute.post("/api/testimonials", createTestimonial);
-testimonialRoute.put("/api/testimonials/:id", updateTestimonial);
-testimonialRoute.delete("/api/testimonials/:id", deleteTestimonial);
+testimonialRoute.get("/", getAllTestimonials);
+testimonialRoute.get("/:id", getTestimonialById);
+testimonialRoute.post("/", createTestimonial);
+testimonialRoute.put("/:id", updateTestimonial);
+testimonialRoute.delete("/:id", deleteTestimonial);
 
 export default testimonialRoute;

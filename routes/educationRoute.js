@@ -9,10 +9,10 @@ import {
 
 const educationRoute = express.Router();
 
-educationRoute.get("/api/education", getAllEducation);
-educationRoute.get("/api/education/:id", getEducationById);
-educationRoute.post("/api/education", createEducation);
-educationRoute.put("/api/education/:id", updateEducation);
-educationRoute.delete("/api/education/:id", deleteEducation);
+educationRoute.get("/", getAllEducation);
+educationRoute.get("/:id", getEducationById);
+educationRoute.post("/", createEducation);
+educationRoute.put("/:id", updateEducation);
+educationRoute.delete("/:id", deleteEducation);
 
 export default educationRoute;

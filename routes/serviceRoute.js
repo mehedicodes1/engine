@@ -9,10 +9,10 @@ import {
 
 const serviceRoute = express.Router();
 
-serviceRoute.get("/api/services", getAllServices);
-serviceRoute.get("/api/services/:id", getServiceById);
-serviceRoute.post("/api/services", createService);
-serviceRoute.put("/api/services/:id", updateService);
-serviceRoute.delete("/api/services/:id", deleteService);
+serviceRoute.get("/", getAllServices);
+serviceRoute.get("/:id", getServiceById);
+serviceRoute.post("/", createService);
+serviceRoute.put("/:id", updateService);
+serviceRoute.delete("/:id", deleteService);
 
 export default serviceRoute;

@@ -15,6 +15,7 @@ import { settingModel } from "../model/setting.js";
 import { skillModel } from "../model/skill.js";
 import { socialLinkModel } from "../model/socialLink.js";
 import { testimonialModel } from "../model/testimonial.js";
+import { userModel } from "../model/user.js";
 
 // ✅ Load .env variables
 dotenv.config();
@@ -55,6 +56,7 @@ let SettingModel = null;
 let SkillModel = null;
 let SocialLinkModel = null;
 let TestimonialModel = null;
+let UserModel = null;
 
 async function connect() {
   try {
@@ -75,6 +77,7 @@ async function connect() {
     SkillModel = await skillModel(sequelize);
     SocialLinkModel = await socialLinkModel(sequelize);
     TestimonialModel = await testimonialModel(sequelize);
+     UserModel = await userModel(sequelize);
 
     // Sync models
     await sequelize.sync({ alter: true }); // Use { force: true } only in development to reset DB
@@ -96,7 +99,8 @@ async function connect() {
     SettingModel,
     SkillModel,
     SocialLinkModel,
-    TestimonialModel
+    TestimonialModel,
+    UserModel
   };
 }
 
@@ -115,5 +119,6 @@ export {
   SettingModel,
   SkillModel,
   SocialLinkModel,
-  TestimonialModel
+  TestimonialModel,
+  UserModel
 };

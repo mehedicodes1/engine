@@ -9,10 +9,10 @@ import {
 
 const experienceRoute = express.Router();
 
-experienceRoute.get("/api/experiences", getAllExperiences);
-experienceRoute.get("/api/experiences/:id", getExperienceById);
-experienceRoute.post("/api/experiences", createExperience);
-experienceRoute.put("/api/experiences/:id", updateExperience);
-experienceRoute.delete("/api/experiences/:id", deleteExperience);
+experienceRoute.get("/", getAllExperiences);
+experienceRoute.get("/:id", getExperienceById);
+experienceRoute.post("/", createExperience);
+experienceRoute.put("/:id", updateExperience);
+experienceRoute.delete("/:id", deleteExperience);
 
 export default experienceRoute;

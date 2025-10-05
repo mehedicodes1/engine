@@ -8,9 +8,9 @@ import {
 
 const contactRoute = express.Router();
 
-contactRoute.get("/api/contacts", getAllContacts);
-contactRoute.get("/api/contacts/:id", getContactById);
-contactRoute.post("/api/contacts", createContact);
-contactRoute.delete("/api/contacts/:id", deleteContact);
+contactRoute.get("/", getAllContacts);
+contactRoute.get("/:id", getContactById);
+contactRoute.post("/", createContact);
+contactRoute.delete("/:id", deleteContact);
 
 export default contactRoute;

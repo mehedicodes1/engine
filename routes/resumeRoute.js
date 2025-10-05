@@ -10,11 +10,11 @@ import {
 
 const resumeRoute = express.Router();
 
-resumeRoute.get("/api/resumes", getAllResumes);
-resumeRoute.get("/api/resumes/current", getCurrentResume);
-resumeRoute.get("/api/resumes/:id", getResumeById);
-resumeRoute.post("/api/resumes", createResume);
-resumeRoute.put("/api/resumes/:id", updateResume);
-resumeRoute.delete("/api/resumes/:id", deleteResume);
+resumeRoute.get("/", getAllResumes);
+resumeRoute.get("/current", getCurrentResume);
+resumeRoute.get("/:id", getResumeById);
+resumeRoute.post("/", createResume);
+resumeRoute.put("/:id", updateResume);
+resumeRoute.delete("/:id", deleteResume);
 
 export default resumeRoute;

@@ -1,22 +1,23 @@
 import express from "express";
 import {
-    createBlog,
-    deleteBlog,
-    getAllBlogs,
-    getBlogById,
-    getBlogBySlug,
-    updateBlog,
-    getPublishedBlogs
+  createBlog,
+  deleteBlog,
+  getAllBlogs,
+  getBlogById,
+  getBlogBySlug,
+  updateBlog,
+  getPublishedBlogs,
 } from "../controller/blogControl.js";
 
 const blogRoute = express.Router();
 
-blogRoute.get("/api/blogs", getAllBlogs);
-blogRoute.get("/api/blogs/published", getPublishedBlogs);
-blogRoute.get("/api/blogs/:id", getBlogById);
-blogRoute.get("/api/blogs/slug/:slug", getBlogBySlug);
-blogRoute.post("/api/blogs", createBlog);
-blogRoute.put("/api/blogs/:id", updateBlog);
-blogRoute.delete("/api/blogs/:id", deleteBlog);
+// Define routes WITHOUT /api prefix
+blogRoute.get("/", getAllBlogs); // GET /api/blogs
+blogRoute.get("/published", getPublishedBlogs); // GET /api/blogs/published
+blogRoute.get("/:id", getBlogById); // GET /api/blogs/:id
+blogRoute.get("/slug/:slug", getBlogBySlug); // GET /api/blogs/slug/:slug
+blogRoute.post("/", createBlog); // POST /api/blogs
+blogRoute.put("/:id", updateBlog); // PUT /api/blogs/:id
+blogRoute.delete("/:id", deleteBlog); // DELETE /api/blogs/:id
 
 export default blogRoute;
