@@ -2,9 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 import { connect } from "./config/database.js";
-import { apiLimiter, authLimiter } from "./middleware/rateLimit.js";
+import { apiLimiter } from "./middleware/rateLimit.js";
 
 // Import all portfolio routes
 import blogRoute from "./routes/blogRoute.js";
@@ -25,7 +25,7 @@ import testimonialRoute from "./routes/testimonialRoute.js";
 import emailRoute from "./routes/emailRoute.js";
 import uploadRoute from "./routes/uploadRoute.js";
 import toolsRoute from "./routes/toolsRoute.js";
-import authRoute from "./routes/authRoute.js";
+// Removed authRoute import for now to skip JWT
 
 // ES modules fix for __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -36,21 +36,18 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// For cPanel deployment - get port from environment
-const cpanelPort = process.env.PORT || 3000;
-
 // Middleware
-app.use(cors());
+app.use(cors()); // Allow requests from any origin
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-// Rate limiting (apply to all routes except static files)
+// Rate limiting (apply to all API routes)
 app.use(apiLimiter);
 
-// Serve uploaded files statically - use absolute path for cPanel
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve uploaded files statically
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-/* ✅ NEW: Simple HTML root route for cPanel health check */
+// Root HTML for health check
 app.get("/", (req, res) => {
   res.send(`
     <html>
@@ -65,7 +62,7 @@ app.get("/", (req, res) => {
   `);
 });
 
-// Health check endpoint
+// Health check
 app.get("/api/health", (req, res) => {
   res.json({
     message: "Server is running!",
@@ -73,24 +70,17 @@ app.get("/api/health", (req, res) => {
     status: "OK",
     version: "2.0.0",
     environment: process.env.NODE_ENV || "production",
-    baseUrl: `${req.protocol}://${req.get('host')}`,
-    features: {
-      authentication: true,
-      fileUpload: true,
-      emailSystem: true,
-      rateLimiting: true,
-      saasTools: true
-    }
+    baseUrl: `${req.protocol}://${req.get("host")}`,
   });
 });
 
-// Root API endpoint
+// Root API info
 app.get("/api", (req, res) => {
   res.json({
     message: "Welcome to Portfolio API",
     version: "2.0.0",
     environment: process.env.NODE_ENV || "production",
-    baseUrl: `${req.protocol}://${req.get('host')}`,
+    baseUrl: `${req.protocol}://${req.get("host")}`,
     endpoints: {
       blogs: "/api/blogs",
       projects: "/api/projects",
@@ -105,23 +95,15 @@ app.get("/api", (req, res) => {
       skills: "/api/skills",
       socialLinks: "/api/social-links",
       testimonials: "/api/testimonials",
-      auth: "/api/auth",
       email: "/api/email",
       upload: "/api/upload",
       tools: "/api/tools",
-      health: "/api/health"
+      health: "/api/health",
     },
-    newFeatures: [
-      "JWT Authentication",
-      "File Upload System",
-      "Email Service",
-      "Rate Limiting",
-      "SaaS Tools"
-    ]
   });
 });
 
-// Mount all portfolio routes
+// Mount all portfolio routes (no JWT/auth middleware)
 app.use("/api/blogs", blogRoute);
 app.use("/api/projects", projectRoute);
 app.use("/api/categories", categoryRoute);
@@ -136,52 +118,41 @@ app.use("/api/skills", skillRoute);
 app.use("/api/social-links", socialLinkRoute);
 app.use("/api/testimonials", testimonialRoute);
 
-// Mount new feature routes
-app.use("/api/auth", authLimiter, authRoute);
+// Mount new feature routes (without JWT)
 app.use("/api/email", emailRoute);
 app.use("/api/upload", uploadRoute);
 app.use("/api/tools", toolsRoute);
 
-// 404 handler for API routes
+// 404 for unknown API routes
 app.use("/api", (req, res) => {
   res.status(404).json({
     message: "API endpoint not found",
     path: req.originalUrl,
     method: req.method,
-    suggestion: "Check available endpoints at /api",
-    availableEndpoints: [
-      "/api/health",
-      "/api/blogs",
-      "/api/projects",
-      "/api/auth/login",
-      "/api/auth/register"
-    ]
   });
 });
 
 // Global error handler
-app.use((error, req, res, next) => {
-  console.error("Global error handler:", error);
+app.use((err, req, res, next) => {
+  console.error("Global error:", err);
   res.status(500).json({
     message: "Internal server error",
-    error: process.env.NODE_ENV === "development" ? error.message : "Something went wrong",
+    error:
+      process.env.NODE_ENV === "development"
+        ? err.message
+        : "Something went wrong",
   });
 });
 
-// Initialize database and start server
+// Connect DB and start server
 connect()
   .then(() => {
-    app.listen(cpanelPort, () => {
-      console.log(`🚀 Server is running on port ${cpanelPort}`);
-      console.log(`📊 Health check: /api/health`);
-      console.log(`🌐 Environment: ${process.env.NODE_ENV || "production"}`);
-      console.log(`🛡️  Features: Authentication, File Upload, Email, Rate Limiting, SaaS Tools`);
-      console.log(`📧 Email: ${process.env.SMTP_USER ? 'Configured' : 'Not configured'}`);
-      console.log(`📍 Base URL: https://mehedicodes.com/engine`);
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
-  .catch((error) => {
-    console.error("❌ Failed to start server:", error);
+  .catch((err) => {
+    console.error("❌ Failed to start server:", err);
     process.exit(1);
   });
 
