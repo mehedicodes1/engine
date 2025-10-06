@@ -50,6 +50,21 @@ app.use(apiLimiter);
 // Serve uploaded files statically - use absolute path for cPanel
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+/* ✅ NEW: Simple HTML root route for cPanel health check */
+app.get("/", (req, res) => {
+  res.send(`
+    <html>
+      <head><title>Portfolio API</title></head>
+      <body style="font-family: Arial; text-align: center; padding: 30px;">
+        <h2>🚀 Portfolio API is Running</h2>
+        <p>Status: OK</p>
+        <p>Environment: ${process.env.NODE_ENV || "production"}</p>
+        <p><a href="/api/health">Go to /api/health</a></p>
+      </body>
+    </html>
+  `);
+});
+
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({
@@ -69,7 +84,7 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Root endpoint
+// Root API endpoint
 app.get("/api", (req, res) => {
   res.json({
     message: "Welcome to Portfolio API",
@@ -77,7 +92,6 @@ app.get("/api", (req, res) => {
     environment: process.env.NODE_ENV || "production",
     baseUrl: `${req.protocol}://${req.get('host')}`,
     endpoints: {
-      // Core portfolio endpoints
       blogs: "/api/blogs",
       projects: "/api/projects",
       categories: "/api/categories",
@@ -91,8 +105,6 @@ app.get("/api", (req, res) => {
       skills: "/api/skills",
       socialLinks: "/api/social-links",
       testimonials: "/api/testimonials",
-      
-      // New feature endpoints
       auth: "/api/auth",
       email: "/api/email",
       upload: "/api/upload",
@@ -144,18 +156,6 @@ app.use("/api", (req, res) => {
       "/api/auth/login",
       "/api/auth/register"
     ]
-  });
-});
-
-// Root path handler - important for cPanel subdirectory
-app.get("/", (req, res) => {
-  res.json({
-    message: "Portfolio API Server",
-    version: "2.0.0",
-    status: "running",
-    documentation: "/api",
-    healthCheck: "/api/health",
-    note: "This API is deployed in /engine subdirectory. Use /api endpoints for all operations."
   });
 });
 
