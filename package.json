@@ -1,13 +1,14 @@
 {
   "name": "portfolio-backend",
   "version": "2.0.0",
-  "description": "Portfolio API backend with authentication, uploads, and email system.",
+  "description": "Production-ready Portfolio API backend with uploads, email, and content management.",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=production node index.js",
+    "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "npm install --production"
+    "serve": "NODE_ENV=production node index.js",
+    "clean-install": "rm -rf node_modules && npm install --omit=dev"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -26,14 +27,15 @@
     "nodemon": "^3.1.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.x"
   },
   "keywords": [
     "express",
     "portfolio",
     "api",
     "nodejs",
-    "backend"
+    "backend",
+    "production"
   ],
   "author": "Mehedi Hasan",
   "license": "MIT"

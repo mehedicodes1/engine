@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import { connect } from "./config/database.js";
 import { apiLimiter } from "./middleware/rateLimit.js";
 
-// Import all portfolio routes
+// Import all routes
 import blogRoute from "./routes/blogRoute.js";
 import projectRoute from "./routes/projectRoute.js";
 import categoryRoute from "./routes/categoryRoute.js";
@@ -20,67 +20,61 @@ import settingRoute from "./routes/settingRoute.js";
 import skillRoute from "./routes/skillRoute.js";
 import socialLinkRoute from "./routes/socialLinkRoute.js";
 import testimonialRoute from "./routes/testimonialRoute.js";
-
-// Import new feature routes
 import emailRoute from "./routes/emailRoute.js";
 import uploadRoute from "./routes/uploadRoute.js";
 import toolsRoute from "./routes/toolsRoute.js";
-// Removed authRoute import for now to skip JWT
-
-// ES modules fix for __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
+// Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+const ENV = process.env.NODE_ENV || "production";
 
-// Middleware
-app.use(cors()); // Allow requests from any origin
+// === Middleware ===
+app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-
-// Rate limiting (apply to all API routes)
 app.use(apiLimiter);
 
-// Serve uploaded files statically
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// === Static Files ===
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-// Root HTML for health check
+// === Health Check Routes ===
 app.get("/", (req, res) => {
   res.send(`
     <html>
       <head><title>Portfolio API</title></head>
-      <body style="font-family: Arial; text-align: center; padding: 30px;">
+      <body style="font-family:Arial;text-align:center;padding:30px;">
         <h2>🚀 Portfolio API is Running</h2>
         <p>Status: OK</p>
-        <p>Environment: ${process.env.NODE_ENV || "production"}</p>
-        <p><a href="/api/health">Go to /api/health</a></p>
+        <p>Environment: ${ENV}</p>
+        <p>Server Time: ${new Date().toLocaleString()}</p>
+        <p><a href="/api/health">Check API Health</a></p>
       </body>
     </html>
   `);
 });
 
-// Health check
 app.get("/api/health", (req, res) => {
   res.json({
-    message: "Server is running!",
-    timestamp: new Date().toISOString(),
+    message: "Server is running successfully",
     status: "OK",
+    timestamp: new Date().toISOString(),
     version: "2.0.0",
-    environment: process.env.NODE_ENV || "production",
-    baseUrl: `${req.protocol}://${req.get("host")}`,
+    environment: ENV,
   });
 });
 
-// Root API info
+// === Root API Info ===
 app.get("/api", (req, res) => {
   res.json({
     message: "Welcome to Portfolio API",
     version: "2.0.0",
-    environment: process.env.NODE_ENV || "production",
-    baseUrl: `${req.protocol}://${req.get("host")}`,
+    environment: ENV,
     endpoints: {
       blogs: "/api/blogs",
       projects: "/api/projects",
@@ -103,7 +97,7 @@ app.get("/api", (req, res) => {
   });
 });
 
-// Mount all portfolio routes (no JWT/auth middleware)
+// === Mount Routes ===
 app.use("/api/blogs", blogRoute);
 app.use("/api/projects", projectRoute);
 app.use("/api/categories", categoryRoute);
@@ -117,42 +111,41 @@ app.use("/api/settings", settingRoute);
 app.use("/api/skills", skillRoute);
 app.use("/api/social-links", socialLinkRoute);
 app.use("/api/testimonials", testimonialRoute);
-
-// Mount new feature routes (without JWT)
 app.use("/api/email", emailRoute);
 app.use("/api/upload", uploadRoute);
 app.use("/api/tools", toolsRoute);
 
-// 404 for unknown API routes
-app.use("/api", (req, res) => {
-  res.status(404).json({
-    message: "API endpoint not found",
-    path: req.originalUrl,
-    method: req.method,
-  });
+// === 404 Handler - SIMPLIFIED VERSION ===
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith("/api/")) {
+    return res.status(404).json({
+      message: "API endpoint not found",
+      path: req.originalUrl,
+      method: req.method,
+    });
+  }
+  next();
 });
 
-// Global error handler
+// === Global Error Handler ===
 app.use((err, req, res, next) => {
-  console.error("Global error:", err);
+  console.error("❌ Global Error:", err);
   res.status(500).json({
-    message: "Internal server error",
-    error:
-      process.env.NODE_ENV === "development"
-        ? err.message
-        : "Something went wrong",
+    message: "Internal Server Error",
+    error: ENV === "development" ? err.message : "Something went wrong",
   });
 });
 
-// Connect DB and start server
+// === Start Server ===
 connect()
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`✅ Portfolio API running at: http://localhost:${PORT}`);
+      console.log(`🌐 Environment: ${ENV}`);
     });
   })
   .catch((err) => {
-    console.error("❌ Failed to start server:", err);
+    console.error("❌ Database connection failed:", err);
     process.exit(1);
   });
 
